@@ -38,6 +38,9 @@ Assignment_3/
    jupyter notebook
    ```
 4. Open `Bisection_Algo.ipynb` to view and run the implementation
+## Or If you don't want to dowanload jupyter notebook on your system 
+1.you can copy the `Bisection_Algo.ipynb` ,then paste in colab.research
+
 
 ## Usage
 1. Run the Jupyter Notebook to see the implementation and visualizations
