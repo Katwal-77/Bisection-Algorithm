@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment-3 | The Bisection Algorithm: A Step-by-Step Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        header, footer {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            color: #fff;
+            padding: 2.2em 0 1.5em 0;
+            text-align: center;
+            box-shadow: 0 6px 24px #1a298055;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 30px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            color: #fff;
+            font-size: 2.5em;
+            letter-spacing: 1.5px;
+            margin: 0.2em 0 0.1em 0;
+            line-height: 1.15;
+            font-weight: 800;
+            text-shadow: 0 4px 16px #2228, 0 1px 0 #fff3;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .visualization {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fafdff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px #1a298012;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e8eaf6;
+            font-weight: 700;
+            color: #185a9d;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .formula {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+        }
+        #iterationTable {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        nav {
+            background: linear-gradient(90deg, #232526 0%, #1a2980 100%);
+            padding: 0.7em 0;
+            border-bottom: 3px solid #26d0ce;
+            margin-bottom: 1.5em;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        nav li { margin: 0 1em; }
+        nav a {
+            color: #ffe082;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.15em;
+            letter-spacing: 1px;
+            transition: color 0.2s, text-shadow 0.2s;
+            text-shadow: 0 1px 8px #1a298033;
+        }
+        nav a:hover {
+            color: #00ffe7;
+            text-shadow: 0 2px 16px #26d0ce77, 0 1px 0 #fff3;
+        }
+        .step {
+            background: linear-gradient(90deg, #e3eafc 70%, #d1f2f6 100%);
+            border-left: 7px solid #26d0ce;
+            padding: 1.3em 1.5em;
+            margin-bottom: 1.7em;
+            border-radius: 7px;
+            font-size: 1.1em;
+            color: #1a2980;
+            box-shadow: 0 2px 8px #1a298012;
+        }
+    </style>
+</head>
+<body>
+    <header style="position:relative;overflow:hidden;">
+        <svg style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;" viewBox="0 0 1200 200" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="bg-gradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#26d0ce"/>
+                    <stop offset="100%" stop-color="#1a2980"/>
+                </linearGradient>
+                <radialGradient id="circle-gradient" cx="80%" cy="10%" r="1.2">
+                    <stop offset="0%" stop-color="#ffd70088"/>
+                    <stop offset="100%" stop-color="#26d0ce00"/>
+                </radialGradient>
+            </defs>
+            <rect width="1200" height="200" fill="url(#bg-gradient)"/>
+            <circle cx="900" cy="60" r="120" fill="url(#circle-gradient)"/>
+            <circle cx="200" cy="150" r="100" fill="#00ffe733"/>
+        </svg>
+        <div style="position:relative;z-index:1;">
+            <div style="font-size:1.6em;letter-spacing:3px;text-shadow:0 2px 12px #1a298077,0 1px 0 #fff3;color:#ffd700;font-weight:700;">Assignment-3 | Numerical Analysis</div>
+            <h1 style="font-size:2.9em;font-weight:900;margin:0.15em 0 0.13em 0;letter-spacing:2px;color:#fff;text-shadow:0 6px 24px #1a298099,0 1px 0 #fff3;">The Bisection Algorithm</h1>
+            <p style="font-size:1.3em;font-weight:600;color:#ffe082;text-shadow:0 2px 12px #1a298066,0 1px 0 #fff3;">A Comprehensive Guide with Implementation and Visualization</p>
+            <div style="color:#ffd700;font-size:1.15em;margin-top:0.7em;font-weight:700;text-shadow:0 2px 8px #2226,0 1px 0 #fff3;">
+                Submitted by: Prem Bahadur Katuwal <span style="font-weight:400;opacity:0.85;">(202424080129)</span>
+            </div>
+            <div style="color:#ff00c8;font-size:1.15em;margin-top:0.7em;font-weight:700;text-shadow:0 2px 8px #2226,0 1px 0 #fff3;">
+                Computer Science and Engineering
+            </div>
+            <div style="color:#00ffe7;font-size:1.12em;margin-top:0.3em;font-weight:600;text-shadow:0 2px 8px #2226,0 1px 0 #fff3;">
+                University of Electronic Science and Technology of China (UESTC)
+            </div>
+            <div style="color:#fff;font-size:1.09em;margin-top:0.2em;font-weight:500;text-shadow:0 1px 8px #ffd70066,0 1px 0 #fff3;">
+                <span style="background:rgba(26,41,128,0.09);padding:0.18em 0.7em;border-radius:18px 6px 18px 6px;box-shadow:0 2px 8px #ffd70022;display:inline-block;">
+                    Submitted to: <b style="color:#ffd700;">Prof. Xi-Le Zhao</b> <span style="font-size:0.95em;opacity:0.85;">(2021-2024 World's Top 2% Scientists)</span>
+                </span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#algorithm">Algorithm</a></li>
+            <li><a href="#implementation">Implementation</a></li>
+            <li><a href="#example">Example</a></li>
+            <li><a href="#visualization">Visualization</a></li>
+            <li><a href="#analysis">Error Analysis</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="bisection_assignment.zip" download style="background-color: #ffd700; color: #1a2980; padding: 5px 10px; border-radius: 5px;">Download All Files</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="introduction">
+            <h2>Introduction</h2>
+            <div class="step">
+                <p>The bisection method is one of the simplest and most reliable numerical techniques for finding roots of continuous functions. A root of a function f(x) is a value of x for which f(x) = 0. The bisection method is based on the Intermediate Value Theorem from calculus, which states that if a continuous function changes sign over an interval, then it must have at least one root within that interval.</p>
+
+                <p>The method works by repeatedly dividing an interval in half and selecting the subinterval where the function changes sign. This process continues until the interval is sufficiently small, at which point we have a good approximation of the root.</p>
+
+                <p>While there are faster methods for finding roots (such as Newton-Raphson or secant methods), the bisection method has several advantages:</p>
+                <ul>
+                    <li><strong>Guaranteed convergence:</strong> If the initial conditions are met, the method will always converge to a root.</li>
+                    <li><strong>Simplicity:</strong> The algorithm is straightforward to understand and implement.</li>
+                    <li><strong>Robustness:</strong> Works well even for functions with discontinuous derivatives.</li>
+                </ul>
+
+                <p>This guide provides a comprehensive explanation of the bisection algorithm, including its mathematical foundation, step-by-step implementation, and an interactive visualization to help build intuition about how the method works.</p>
+            </div>
+        </section>
+
+        <section id="algorithm">
+            <h2>The Bisection Algorithm</h2>
+            <div class="step">
+                <h3>Prerequisites</h3>
+                <p>Before applying the bisection method, we need:</p>
+                <ul>
+                    <li>A continuous function f(x)</li>
+                    <li>An interval [a, b] where f(a) and f(b) have opposite signs (meaning f(a) × f(b) < 0)</li>
+                    <li>A tolerance level (ε) to determine when to stop the iterations</li>
+                </ul>
+
+                <h3>Algorithm Steps</h3>
+                <ol>
+                    <li>Start with an interval [a, b] where f(a) × f(b) < 0</li>
+                    <li>Calculate the midpoint c = (a + b) / 2</li>
+                    <li>Evaluate f(c)</li>
+                    <li>If |f(c)| < ε or (b - a) / 2 < ε, then c is the approximate root</li>
+                    <li>If f(c) × f(a) < 0, then the root is in the interval [a, c], so set b = c</li>
+                    <li>If f(c) × f(b) < 0, then the root is in the interval [c, b], so set a = c</li>
+                    <li>Repeat steps 2-6 until the stopping criterion is met</li>
+                </ol>
+
+                <h3>Pseudocode</h3>
+                <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; line-height: 1.5;">
+function bisection(f, a, b, tolerance, max_iterations)
+    if f(a) * f(b) >= 0 then
+        return "Error: Function must change sign over the interval"
+    end if
+
+    iteration = 0
+
+    while iteration < max_iterations do
+        c = (a + b) / 2
+
+        if |f(c)| < tolerance or (b - a) / 2 < tolerance then
+            return c
+        end if
+
+        if f(c) * f(a) < 0 then
+            b = c
+        else
+            a = c
+        end if
+
+        iteration = iteration + 1
+    end while
+
+    return c
+end function</pre>
+
+                <h3>Mathematical Formulation</h3>
+                <div class="formula">
+                    <p>For each iteration i:</p>
+                    <p>c<sub>i</sub> = (a<sub>i</sub> + b<sub>i</sub>) / 2</p>
+                    <p>If f(c<sub>i</sub>) × f(a<sub>i</sub>) < 0, then a<sub>i+1</sub> = a<sub>i</sub> and b<sub>i+1</sub> = c<sub>i</sub></p>
+                    <p>If f(c<sub>i</sub>) × f(b<sub>i</sub>) < 0, then a<sub>i+1</sub> = c<sub>i</sub> and b<sub>i+1</sub> = b<sub>i</sub></p>
+                </div>
+
+                <h3>Convergence</h3>
+                <p>The bisection method has a predictable convergence rate. After n iterations, the width of the interval is:</p>
+                <div class="formula">
+                    <p>(b - a) / 2<sup>n</sup></p>
+                </div>
+                <p>This means that the error decreases by a factor of 2 with each iteration, which is known as linear convergence. While this is slower than some other methods (like Newton-Raphson, which has quadratic convergence), the guaranteed convergence makes the bisection method a reliable choice for many applications.</p>
+
+                <h3>Convergence Analysis</h3>
+                <p>The bisection method exhibits <strong>linear convergence</strong>, which can be characterized as follows:</p>
+                <ul>
+                    <li><strong>Error Reduction:</strong> Each iteration reduces the error by a constant factor (1/2)</li>
+                    <li><strong>Convergence Rate:</strong> The error after n iterations is proportional to (1/2)<sup>n</sup></li>
+                    <li><strong>Iterations Required:</strong> To achieve an accuracy of ε, approximately log<sub>2</sub>((b-a)/ε) iterations are needed</li>
+                </ul>
+
+                <p>Mathematically, if we denote the error at iteration n as e<sub>n</sub>, then:</p>
+                <div class="formula">
+                    <p>e<sub>n</sub> ≤ (b - a) / 2<sup>n+1</sup></p>
+                </div>
+
+                <p>This means that to reduce the error by a factor of 10, we need approximately log<sub>2</sub>(10) ≈ 3.32 iterations. In contrast, methods with quadratic convergence (like Newton-Raphson) approximately double the number of correct digits with each iteration.</p>
+
+                <p>The table below illustrates the convergence behavior for an initial interval [a, b] with width 1:</p>
+
+                <table style="width: 80%; margin: 20px auto; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Iteration (n)</th>
+                            <th>Maximum Error</th>
+                            <th>Approximate Digits of Accuracy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>0.25</td>
+                            <td>0.6</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>0.015625</td>
+                            <td>1.8</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>0.00048828125</td>
+                            <td>3.3</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>0.00000047683716</td>
+                            <td>6.3</td>
+                        </tr>
+                        <tr>
+                            <td>50</td>
+                            <td>4.44 × 10<sup>-16</sup></td>
+                            <td>15.4</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>While the bisection method converges more slowly than methods like Newton-Raphson, its reliability and simplicity make it valuable, especially in cases where other methods might fail due to issues with derivatives or poor initial guesses.</p>
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>Implementation</h2>
+            <div class="step">
+                <h3>Python Implementation</h3>
+                <p>Here's a Python implementation of the bisection method:</p>
+
+                <pre><code class="language-python">def bisection(f, a, b, tol=1e-6, max_iter=100):
+    """
+    Find a root of function f within the interval [a, b] using the bisection method.
+
+    Parameters:
+    f : function
+        The function for which we are finding a root
+    a, b : float
+        The interval bounds
+    tol : float
+        Tolerance for stopping criterion
+    max_iter : int
+        Maximum number of iterations
+
+    Returns:
+    float
+        Approximate root
+    int
+        Number of iterations performed
+    list
+        History of iterations for visualization
+    """
+    # Check if the function changes sign over the interval
+    if f(a) * f(b) >= 0:
+        raise ValueError("Function must change sign over the interval [a, b]")
+
+    # Initialize variables
+    iteration = 0
+    history = []
+
+    while iteration < max_iter:
+        # Calculate midpoint
+        c = (a + b) / 2
+        fc = f(c)
+
+        # Store iteration data for visualization
+        history.append({
+            'iteration': iteration,
+            'a': a,
+            'b': b,
+            'c': c,
+            'f(a)': f(a),
+            'f(b)': f(b),
+            'f(c)': fc,
+            'error': (b - a) / 2
+        })
+
+        # Check if we've found the root or reached desired tolerance
+        if abs(fc) < tol or (b - a) / 2 < tol:
+            break
+
+        # Update interval
+        if f(a) * fc < 0:
+            b = c
+        else:
+            a = c
+
+        iteration += 1
+
+    return c, iteration, history</code></pre>
+
+                <h3>JavaScript Implementation</h3>
+                <p>Here's a JavaScript implementation that we'll use for our interactive visualization:</p>
+
+                <pre><code class="language-javascript">function bisection(f, a, b, tol = 1e-6, maxIter = 100) {
+    // Check if the function changes sign over the interval
+    if (f(a) * f(b) >= 0) {
+        throw new Error("Function must change sign over the interval [a, b]");
+    }
+
+    let iterations = [];
+    let c, fa, fb, fc;
+
+    fa = f(a);
+    fb = f(b);
+
+    for (let i = 0; i < maxIter; i++) {
+        // Calculate midpoint
+        c = (a + b) / 2;
+        fc = f(c);
+
+        // Store iteration data
+        iterations.push({
+            iteration: i + 1,
+            a: a,
+            b: b,
+            c: c,
+            fa: fa,
+            fb: fb,
+            fc: fc,
+            error: (b - a) / 2
+        });
+
+        // Check if we've found the root or reached desired tolerance
+        if (Math.abs(fc) < tol || (b - a) / 2 < tol) {
+            break;
+        }
+
+        // Update interval
+        if (fa * fc < 0) {
+            b = c;
+            fb = fc;
+        } else {
+            a = c;
+            fa = fc;
+        }
+    }
+
+    return {
+        root: c,
+        functionValue: fc,
+        iterations: iterations,
+        error: (b - a) / 2
+    };
+}</code></pre>
+
+                <h3>Key Implementation Considerations</h3>
+                <ul>
+                    <li><strong>Initial check:</strong> Verify that f(a) × f(b) < 0 to ensure the interval contains a root.</li>
+                    <li><strong>Stopping criteria:</strong> The algorithm can stop when either |f(c)| < ε (function value is close to zero) or (b - a) / 2 < ε (interval is sufficiently small).</li>
+                    <li><strong>Tracking iterations:</strong> Storing the history of iterations is useful for visualization and understanding the algorithm's behavior.</li>
+                    <li><strong>Error handling:</strong> Proper error messages help users understand when the method cannot be applied.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="example">
+            <h2>Example: Finding a Root of f(x) = x³ - x - 2</h2>
+            <div class="step">
+                <p>Let's use the bisection method to find a root of the function f(x) = x³ - x - 2.</p>
+
+                <h3>Step 1: Find an interval [a, b] where f(a) × f(b) < 0</h3>
+                <p>Let's evaluate the function at a few points:</p>
+                <ul>
+                    <li>f(1) = 1³ - 1 - 2 = -2 (negative)</li>
+                    <li>f(2) = 2³ - 2 - 2 = 4 (positive)</li>
+                </ul>
+                <p>Since f(1) is negative and f(2) is positive, we know there's a root in the interval [1, 2].</p>
+
+                <h3>Step 2: Apply the bisection method</h3>
+                <p>Let's trace through the first few iterations manually:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Iteration</th>
+                            <th>a</th>
+                            <th>b</th>
+                            <th>c (midpoint)</th>
+                            <th>f(a)</th>
+                            <th>f(b)</th>
+                            <th>f(c)</th>
+                            <th>New Interval</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>1.0000</td>
+                            <td>2.0000</td>
+                            <td>1.5000</td>
+                            <td>-2.0000</td>
+                            <td>4.0000</td>
+                            <td>0.3750</td>
+                            <td>[1.0000, 1.5000]</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1.0000</td>
+                            <td>1.5000</td>
+                            <td>1.2500</td>
+                            <td>-2.0000</td>
+                            <td>0.3750</td>
+                            <td>-0.9844</td>
+                            <td>[1.2500, 1.5000]</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>1.2500</td>
+                            <td>1.5000</td>
+                            <td>1.3750</td>
+                            <td>-0.9844</td>
+                            <td>0.3750</td>
+                            <td>-0.3438</td>
+                            <td>[1.3750, 1.5000]</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>1.3750</td>
+                            <td>1.5000</td>
+                            <td>1.4375</td>
+                            <td>-0.3438</td>
+                            <td>0.3750</td>
+                            <td>0.0059</td>
+                            <td>[1.3750, 1.4375]</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>After just 4 iterations, we've narrowed down the root to the interval [1.3750, 1.4375], and our approximation c = 1.4375 gives f(c) ≈ 0.0059, which is already quite close to zero.</p>
+
+                <p>If we continue the process with a tolerance of 10⁻⁶, we would find that the root is approximately 1.5213804245, with f(1.5213804245) ≈ 0.0000042658.</p>
+
+                <div class="controls">
+                    <button id="runExample">Run Full Example</button>
+                    <button id="resetExample">Reset</button>
+                    <button id="stepExample">Step Through</button>
+                </div>
+
+                <div id="iterationTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Iteration</th>
+                                <th>a</th>
+                                <th>b</th>
+                                <th>c (midpoint)</th>
+                                <th>f(a)</th>
+                                <th>f(b)</th>
+                                <th>f(c)</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Iteration data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="visualization">
+            <h2>Visualization of the Bisection Method</h2>
+            <div class="step">
+                <p>The animation below shows how the bisection method narrows down the interval [a, b] with each iteration until it converges to the root of the function f(x) = x³ - x - 2.</p>
+
+                <div class="controls">
+                    <button id="startAnimation">Start Animation</button>
+                    <button id="pauseAnimation">Pause</button>
+                    <button id="resetAnimation">Reset</button>
+                </div>
+
+                <canvas id="bisectionCanvas" width="900" height="400"></canvas>
+
+                <p>The visualization shows:</p>
+                <ul>
+                    <li>The function f(x) = x³ - x - 2 (blue curve)</li>
+                    <li>The current interval [a, b] (red line on x-axis)</li>
+                    <li>The midpoint c (green point)</li>
+                    <li>The function values f(a), f(b), and f(c) (corresponding colored points on the curve)</li>
+                </ul>
+
+                <p>With each iteration, you can see how the interval shrinks and the midpoint approaches the root of the function (where the curve crosses the x-axis).</p>
+
+                <h3>Bisection Method Flowchart</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="width: 400px; margin: 0 auto; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px; background-color: #f9f9f9;">
+                        <!-- Compact Flowchart created with HTML and CSS -->
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <!-- Start -->
+                            <div style="width: 120px; height: 40px; background-color: #3498db; color: white; display: flex; justify-content: center; align-items: center; border-radius: 20px; margin-bottom: 10px; font-weight: bold;">
+                                Start
+                            </div>
+                            <!-- Arrow -->
+                            <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                            <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 10px;"></div>
+
+                            <!-- Input -->
+                            <div style="width: 220px; height: 50px; background-color: #f1c40f; display: flex; justify-content: center; align-items: center; border-radius: 5px; margin-bottom: 10px; text-align: center; padding: 5px; font-size: 0.9em;">
+                                Input function f(x),<br>interval [a,b], tolerance ε
+                            </div>
+                            <!-- Arrow -->
+                            <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                            <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 10px;"></div>
+
+                            <!-- Check sign change -->
+                            <div style="width: 160px; height: 60px; background-color: #e74c3c; color: white; display: flex; justify-content: center; align-items: center; transform: rotate(0deg); transform-origin: center; margin-bottom: 10px; border-radius: 5px;">
+                                <div style="text-align: center;">
+                                    f(a) × f(b) < 0?
+                                </div>
+                            </div>
+
+                            <!-- Yes/No branches -->
+                            <div style="display: flex; width: 100%; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 45%;">
+                                    <div style="font-weight: bold; margin-bottom: 5px;">Yes</div>
+                                    <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                                    <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 5px;"></div>
+                                    <div style="width: 150px; height: 40px; background-color: #2ecc71; color: white; display: flex; justify-content: center; align-items: center; border-radius: 5px; text-align: center; padding: 5px; font-size: 0.9em;">
+                                        c = (a+b)/2
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 45%;">
+                                    <div style="font-weight: bold; margin-bottom: 5px;">No</div>
+                                    <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                                    <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 5px;"></div>
+                                    <div style="width: 150px; height: 40px; background-color: #e74c3c; color: white; display: flex; justify-content: center; align-items: center; border-radius: 5px; text-align: center; padding: 5px; font-size: 0.9em;">
+                                        No root in interval
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Continue with Yes branch -->
+                            <div style="display: flex; flex-direction: column; align-items: center; margin-top: -5px; margin-left: -90px;">
+                                <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                                <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 10px;"></div>
+
+                                <!-- Check convergence -->
+                                <div style="width: 160px; height: 60px; background-color: #e74c3c; color: white; display: flex; justify-content: center; align-items: center; border-radius: 5px; margin-bottom: 10px;">
+                                    <div style="text-align: center; font-size: 0.9em;">
+                                        |f(c)| < ε or<br>(b-a)/2 < ε?
+                                    </div>
+                                </div>
+
+                                <!-- Yes/No branches for convergence -->
+                                <div style="display: flex; width: 320px; justify-content: space-between; margin-bottom: 10px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; width: 45%;">
+                                        <div style="font-weight: bold; margin-bottom: 5px;">Yes</div>
+                                        <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                                        <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 5px;"></div>
+                                        <div style="width: 140px; height: 40px; background-color: #2ecc71; color: white; display: flex; justify-content: center; align-items: center; border-radius: 5px; text-align: center; padding: 5px; font-size: 0.9em;">
+                                            Return c as root
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; width: 45%;">
+                                        <div style="font-weight: bold; margin-bottom: 5px;">No</div>
+                                        <div style="width: 2px; height: 15px; background-color: #333;"></div>
+                                        <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; margin-bottom: 5px;"></div>
+                                        <div style="width: 140px; height: 60px; background-color: #9b59b6; color: white; display: flex; justify-content: center; align-items: center; border-radius: 5px; text-align: center; padding: 5px; font-size: 0.85em;">
+                                            If f(a)×f(c)<0: b=c<br>
+                                            Else: a=c
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Loop back arrow -->
+                            <div style="position: relative; width: 100%; height: 40px;">
+                                <div style="position: absolute; top: -10px; right: 80px; width: 120px; height: 40px; border-right: 2px solid #333; border-bottom: 2px solid #333;"></div>
+                                <div style="position: absolute; top: -10px; right: 200px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid #333;"></div>
+                                <div style="position: absolute; top: 30px; right: 140px; transform: rotate(-90deg); font-size: 0.8em;">Iterate</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-style: italic; margin-top: 10px;">Flowchart illustrating the bisection algorithm process</p>
+                </div>
+
+                <h3>Graphical Representation of Iterations</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <canvas id="iterationCanvas" width="600" height="300" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></canvas>
+                    <p style="font-style: italic; margin-top: 10px;">Graphical representation showing how the bisection method converges to the root</p>
+                </div>
+
+                <h3>Detailed Convergence Visualization</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <canvas id="detailedCanvas" width="600" height="300" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></canvas>
+                    <p style="font-style: italic; margin-top: 10px;">Detailed visualization of the bisection method showing how the interval narrows with each iteration</p>
+                </div>
+
+                <h3>Convergence Rate Visualization</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <canvas id="rateCanvas" width="600" height="300" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></canvas>
+                    <p style="font-style: italic; margin-top: 10px;">Graph showing the linear convergence rate of the bisection method compared to other methods</p>
+                </div>
+
+                <script>
+                    // Draw the iteration visualization
+                    (function() {
+                        const canvas = document.getElementById('iterationCanvas');
+                        if (!canvas) return;
+
+                        const ctx = canvas.getContext('2d');
+                        const width = canvas.width;
+                        const height = canvas.height;
+
+                        // Clear canvas
+                        ctx.clearRect(0, 0, width, height);
+
+                        // Draw axes
+                        ctx.beginPath();
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(width - 50, height - 50); // x-axis
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(50, 50); // y-axis
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Label axes
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('x', width - 40, height - 35);
+                        ctx.fillText('f(x)', 30, 40);
+
+                        // Draw function curve f(x) = x³ - x - 2
+                        ctx.beginPath();
+                        for (let i = 0; i < width - 100; i++) {
+                            const x = i / 100 + 1; // Map to range [1, 2]
+                            const y = Math.pow(x, 3) - x - 2; // f(x) = x³ - x - 2
+                            const canvasX = 50 + i;
+                            const canvasY = height - 50 - y * 30; // Scale for visibility
+
+                            if (i === 0) {
+                                ctx.moveTo(canvasX, canvasY);
+                            } else {
+                                ctx.lineTo(canvasX, canvasY);
+                            }
+                        }
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Draw x-axis at y=0
+                        ctx.beginPath();
+                        ctx.moveTo(50, height - 50 - 0 * 30);
+                        ctx.lineTo(width - 50, height - 50 - 0 * 30);
+                        ctx.strokeStyle = '#999';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        // Draw iterations
+                        const iterations = [
+                            { a: 1, b: 2, c: 1.5, fa: -2, fb: 4, fc: 0.375 },
+                            { a: 1, b: 1.5, c: 1.25, fa: -2, fb: 0.375, fc: -0.984 },
+                            { a: 1.25, b: 1.5, c: 1.375, fa: -0.984, fb: 0.375, fc: -0.344 },
+                            { a: 1.375, b: 1.5, c: 1.4375, fa: -0.344, fb: 0.375, fc: 0.006 }
+                        ];
+
+                        // Draw each iteration
+                        const colors = ['#e74c3c', '#9b59b6', '#2ecc71', '#f39c12'];
+
+                        for (let i = 0; i < iterations.length; i++) {
+                            const iter = iterations[i];
+                            const color = colors[i];
+
+                            // Map values to canvas coordinates
+                            const aX = 50 + (iter.a - 1) * 500;
+                            const bX = 50 + (iter.b - 1) * 500;
+                            const cX = 50 + (iter.c - 1) * 500;
+
+                            // Draw interval
+                            ctx.beginPath();
+                            ctx.moveTo(aX, height - 50);
+                            ctx.lineTo(bX, height - 50);
+                            ctx.strokeStyle = color;
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+
+                            // Draw points
+                            ctx.beginPath();
+                            ctx.arc(aX, height - 50, 5, 0, 2 * Math.PI);
+                            ctx.arc(bX, height - 50, 5, 0, 2 * Math.PI);
+                            ctx.arc(cX, height - 50, 5, 0, 2 * Math.PI);
+                            ctx.fillStyle = color;
+                            ctx.fill();
+
+                            // Label iteration
+                            ctx.fillText(`Iter ${i+1}`, aX - 20, height - 20);
+                        }
+
+                        // Add legend
+                        ctx.font = '12px Arial';
+                        ctx.fillStyle = '#3498db';
+                        ctx.fillText('f(x) = x³ - x - 2', width - 150, 30);
+
+                        // Add title
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Bisection Method: Iteration Process', width / 2 - 120, 30);
+                    })();
+
+                    // Draw the detailed convergence visualization
+                    (function() {
+                        const canvas = document.getElementById('detailedCanvas');
+                        if (!canvas) return;
+
+                        const ctx = canvas.getContext('2d');
+                        const width = canvas.width;
+                        const height = canvas.height;
+
+                        // Clear canvas
+                        ctx.clearRect(0, 0, width, height);
+
+                        // Draw axes
+                        ctx.beginPath();
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(width - 50, height - 50); // x-axis
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(50, 50); // y-axis
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Label axes
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('x', width - 40, height - 35);
+                        ctx.fillText('f(x)', 30, 40);
+
+                        // Draw function curve f(x) = x³ - x - 2
+                        ctx.beginPath();
+                        for (let i = 0; i < width - 100; i++) {
+                            const x = i / 100 + 1; // Map to range [1, 2]
+                            const y = Math.pow(x, 3) - x - 2; // f(x) = x³ - x - 2
+                            const canvasX = 50 + i;
+                            const canvasY = height - 50 - y * 30; // Scale for visibility
+
+                            if (i === 0) {
+                                ctx.moveTo(canvasX, canvasY);
+                            } else {
+                                ctx.lineTo(canvasX, canvasY);
+                            }
+                        }
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Draw x-axis at y=0
+                        ctx.beginPath();
+                        ctx.moveTo(50, height - 50 - 0 * 30);
+                        ctx.lineTo(width - 50, height - 50 - 0 * 30);
+                        ctx.strokeStyle = '#999';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        // Draw a specific iteration in detail
+                        const iter = { a: 1.25, b: 1.5, c: 1.375, fa: -0.984, fb: 0.375, fc: -0.344 };
+
+                        // Map values to canvas coordinates
+                        const aX = 50 + (iter.a - 1) * 500;
+                        const bX = 50 + (iter.b - 1) * 500;
+                        const cX = 50 + (iter.c - 1) * 500;
+                        const faY = height - 50 - iter.fa * 30;
+                        const fbY = height - 50 - iter.fb * 30;
+                        const fcY = height - 50 - iter.fc * 30;
+
+                        // Draw interval
+                        ctx.beginPath();
+                        ctx.moveTo(aX, height - 50);
+                        ctx.lineTo(bX, height - 50);
+                        ctx.strokeStyle = '#e74c3c';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        // Draw vertical lines to function
+                        ctx.beginPath();
+                        ctx.moveTo(aX, height - 50);
+                        ctx.lineTo(aX, faY);
+                        ctx.moveTo(bX, height - 50);
+                        ctx.lineTo(bX, fbY);
+                        ctx.moveTo(cX, height - 50);
+                        ctx.lineTo(cX, fcY);
+                        ctx.strokeStyle = '#2c3e50';
+                        ctx.setLineDash([5, 3]);
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+
+                        // Draw points on x-axis
+                        ctx.beginPath();
+                        ctx.arc(aX, height - 50, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fill();
+                        ctx.fillText('a', aX - 10, height - 35);
+
+                        ctx.beginPath();
+                        ctx.arc(bX, height - 50, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fill();
+                        ctx.fillText('b', bX + 5, height - 35);
+
+                        ctx.beginPath();
+                        ctx.arc(cX, height - 50, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#2ecc71';
+                        ctx.fill();
+                        ctx.fillText('c', cX - 5, height - 35);
+
+                        // Draw points on function
+                        ctx.beginPath();
+                        ctx.arc(aX, faY, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fill();
+                        ctx.fillText('f(a)', aX - 25, faY);
+
+                        ctx.beginPath();
+                        ctx.arc(bX, fbY, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fill();
+                        ctx.fillText('f(b)', bX + 10, fbY);
+
+                        ctx.beginPath();
+                        ctx.arc(cX, fcY, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#2ecc71';
+                        ctx.fill();
+                        ctx.fillText('f(c)', cX + 10, fcY);
+
+                        // Add title
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Bisection Method: Detailed View of Iteration 3', width / 2 - 150, 20);
+
+                        // Add explanation
+                        ctx.font = '12px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Since f(a) × f(c) < 0, the root is in [a, c]', 100, 40);
+                        ctx.fillText('Next iteration: a = 1.25, b = 1.375', 100, 60);
+
+                        // Add function label
+                        ctx.fillStyle = '#3498db';
+                        ctx.fillText('f(x) = x³ - x - 2', width - 150, 40);
+                    })();
+
+                    // Draw the convergence rate visualization
+                    (function() {
+                        const canvas = document.getElementById('rateCanvas');
+                        if (!canvas) return;
+
+                        const ctx = canvas.getContext('2d');
+                        const width = canvas.width;
+                        const height = canvas.height;
+
+                        // Clear canvas
+                        ctx.clearRect(0, 0, width, height);
+
+                        // Draw axes
+                        ctx.beginPath();
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(width - 50, height - 50); // x-axis
+                        ctx.moveTo(50, height - 50);
+                        ctx.lineTo(50, 50); // y-axis
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Label axes
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Iterations', width - 100, height - 30);
+                        ctx.fillText('Error (log scale)', 30, 30);
+
+                        // Draw grid lines
+                        ctx.strokeStyle = '#eee';
+                        ctx.lineWidth = 1;
+
+                        // Horizontal grid lines
+                        for (let i = 1; i < 10; i++) {
+                            const y = height - 50 - (i * (height - 100) / 10);
+                            ctx.beginPath();
+                            ctx.moveTo(50, y);
+                            ctx.lineTo(width - 50, y);
+                            ctx.stroke();
+
+                            // Label y-axis
+                            ctx.fillStyle = '#000';
+                            ctx.fillText(`10^-${i}`, 20, y + 5);
+                        }
+
+                        // Vertical grid lines
+                        for (let i = 0; i <= 10; i++) {
+                            const x = 50 + (i * (width - 100) / 10);
+                            ctx.beginPath();
+                            ctx.moveTo(x, height - 50);
+                            ctx.lineTo(x, 50);
+                            ctx.stroke();
+
+                            // Label x-axis
+                            ctx.fillStyle = '#000';
+                            ctx.fillText(`${i*5}`, x - 5, height - 30);
+                        }
+
+                        // Add title
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Convergence Rate Comparison', width / 2 - 120, 20);
+
+                        // Draw bisection method convergence (linear)
+                        ctx.beginPath();
+                        for (let i = 0; i <= 50; i++) {
+                            const x = 50 + (i * (width - 100) / 10);
+                            // Error is proportional to 2^(-i)
+                            const error = Math.pow(2, -i);
+                            // Log scale for y-axis
+                            const y = height - 50 - (Math.log10(1/error) * (height - 100) / 10);
+
+                            if (i === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        }
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        // Draw Newton method convergence (quadratic)
+                        ctx.beginPath();
+                        for (let i = 0; i <= 10; i++) {
+                            const x = 50 + (i * (width - 100) / 10);
+                            // Error is proportional to (1/2)^(2^i)
+                            const error = Math.pow(0.5, Math.pow(2, i));
+                            // Log scale for y-axis
+                            const y = height - 50 - (Math.log10(1/error) * (height - 100) / 10);
+
+                            if (i === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        }
+                        ctx.strokeStyle = '#e74c3c';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        // Add legend
+                        ctx.font = '12px Arial';
+                        ctx.fillStyle = '#3498db';
+                        ctx.fillText('Bisection Method (Linear)', 100, 40);
+
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fillText('Newton Method (Quadratic)', 100, 60);
+
+                        // Add explanation
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('Note: Bisection method requires more iterations to achieve the same accuracy', 100, 80);
+                    })();
+                </script>
+            </div>
+        </section>
+        <section id="analysis">
+            <h2>Error Analysis</h2>
+            <div class="step">
+                <p>The bisection method has a predictable error bound. After n iterations, the maximum error is:</p>
+
+                <div class="formula">
+                    <p>Error ≤ (b - a) / 2<sup>n+1</sup></p>
+                </div>
+
+                <p>This means that the error decreases by a factor of 2 with each iteration. This is known as linear convergence.</p>
+
+                <h3>Convergence Rate</h3>
+                <p>For our example with the initial interval [1, 2], the error after n iterations is at most (2 - 1) / 2<sup>n+1</sup> = 1 / 2<sup>n+1</sup>.</p>
+
+                <table>
+                    <tr>
+                        <th>Iterations</th>
+                        <th>Maximum Error</th>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>1/2<sup>6</sup> ≈ 0.015625</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>1/2<sup>11</sup> ≈ 0.00049</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>1/2<sup>16</sup> ≈ 0.000015</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>1/2<sup>21</sup> ≈ 4.77 × 10<sup>-7</sup></td>
+                    </tr>
+                </table>
+
+                <p>This predictable convergence rate is one of the strengths of the bisection method. We can determine in advance how many iterations are needed to achieve a desired level of accuracy.</p>
+
+                <h3>Comparison with Other Root-Finding Methods</h3>
+                <p>While the bisection method is reliable, it's not the fastest method for finding roots. Here's a comparison with other common root-finding methods:</p>
+
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Convergence Rate</th>
+                        <th>Advantages</th>
+                        <th>Disadvantages</th>
+                    </tr>
+                    <tr>
+                        <td>Bisection</td>
+                        <td>Linear</td>
+                        <td>Guaranteed convergence, simple implementation</td>
+                        <td>Relatively slow convergence</td>
+                    </tr>
+                    <tr>
+                        <td>Newton-Raphson</td>
+                        <td>Quadratic</td>
+                        <td>Very fast convergence near the root</td>
+                        <td>Requires derivative, may diverge</td>
+                    </tr>
+                    <tr>
+                        <td>Secant</td>
+                        <td>Superlinear (≈ 1.618)</td>
+                        <td>Faster than bisection, no derivatives needed</td>
+                        <td>Not guaranteed to converge</td>
+                    </tr>
+                    <tr>
+                        <td>False Position</td>
+                        <td>Linear to Superlinear</td>
+                        <td>Combines advantages of bisection and secant</td>
+                        <td>Can be slow if one endpoint remains fixed</td>
+                    </tr>
+                </table>
+
+                <p>The choice of method depends on the specific problem requirements. If reliability is more important than speed, the bisection method is often the best choice.</p>
+            </div>
+        </section>
+
+        <section id="applications">
+            <h2>Applications of the Bisection Method</h2>
+            <div class="step">
+                <p>The bisection method is used in various fields due to its simplicity and reliability:</p>
+
+                <h3>Engineering Applications</h3>
+                <ul>
+                    <li><strong>Structural Analysis:</strong> Finding equilibrium positions in structural systems</li>
+                    <li><strong>Fluid Mechanics:</strong> Solving flow equations and finding critical points</li>
+                    <li><strong>Control Systems:</strong> Determining stability boundaries and control parameters</li>
+                    <li><strong>Electrical Engineering:</strong> Circuit analysis and finding operating points</li>
+                </ul>
+
+                <h3>Financial Applications</h3>
+                <ul>
+                    <li><strong>Internal Rate of Return (IRR):</strong> Finding the discount rate that makes the net present value of cash flows equal to zero</li>
+                    <li><strong>Bond Yield Calculations:</strong> Determining the yield to maturity of bonds</li>
+                    <li><strong>Option Pricing:</strong> Finding implied volatilities in option pricing models</li>
+                </ul>
+
+                <h3>Scientific Computing</h3>
+                <ul>
+                    <li><strong>Physics:</strong> Finding equilibrium points, energy levels, and zero-crossings</li>
+                    <li><strong>Chemistry:</strong> Determining reaction equilibria and phase transitions</li>
+                    <li><strong>Computational Geometry:</strong> Finding intersections between curves and surfaces</li>
+                </ul>
+
+                <h3>Computer Graphics</h3>
+                <ul>
+                    <li><strong>Ray Tracing:</strong> Finding intersections between rays and surfaces</li>
+                    <li><strong>Isosurface Extraction:</strong> Locating points where a function equals a specific value</li>
+                </ul>
+
+                <h3>Optimization</h3>
+                <ul>
+                    <li><strong>Bracketing Methods:</strong> As a subroutine in more complex optimization algorithms</li>
+                    <li><strong>Global Optimization:</strong> Finding regions that may contain global optima</li>
+                </ul>
+
+                <p>The bisection method is often used as a reliable fallback when more sophisticated methods fail. Its guaranteed convergence makes it valuable in critical applications where robustness is essential.</p>
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <div class="step">
+                <p>The bisection method is a fundamental numerical technique for finding roots of continuous functions. Its key strengths are:</p>
+
+                <ul>
+                    <li><strong>Reliability:</strong> Guaranteed convergence if the initial conditions are met</li>
+                    <li><strong>Simplicity:</strong> Easy to understand and implement</li>
+                    <li><strong>Predictable Error:</strong> Clear bounds on the error after a given number of iterations</li>
+                </ul>
+
+                <p>While there are faster methods available (like Newton-Raphson or secant methods), the bisection method remains valuable due to its robustness. It's often used as a reliable fallback when other methods fail or as a way to generate a good initial guess for faster methods.</p>
+
+                <p>Understanding the bisection method provides a solid foundation for exploring more advanced numerical techniques. The concepts of bracketing a root and systematically reducing the interval are fundamental ideas that appear in many numerical algorithms.</p>
+
+                <p>For practical applications, consider the following guidelines:</p>
+
+                <ul>
+                    <li>Use the bisection method when reliability is more important than speed</li>
+                    <li>If you need faster convergence and have access to derivatives, consider Newton's method</li>
+                    <li>If derivatives are unavailable but faster convergence is needed, consider the secant method</li>
+                    <li>For the best balance, consider hybrid methods that combine the reliability of bisection with the speed of other methods</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Assignment-3 | The Bisection Algorithm: A Step-by-Step Guide &copy; 2024 - Prem Bahadur Katuwal (202424080129) - UESTC</p>
+    </footer>
+
+    <script>
+        // Define our example function: f(x) = x³ - x - 2
+        function f(x) {
+            return Math.pow(x, 3) - x - 2;
+        }
+
+        // Variables for the animation
+        let animationId;
+        let currentIteration = 0;
+        let iterations = [];
+        let isAnimating = false;
+
+        // Run the bisection method on our example
+        document.getElementById('runExample')?.addEventListener('click', function() {
+            try {
+                const result = bisection(f, 1, 2);
+                iterations = result.iterations;
+
+                // Display all iterations at once
+                displayIterations(iterations);
+
+                // Update the visualization
+                drawFunction();
+                drawBisectionState(iterations.length - 1);
+
+                console.log(`Root found at x ≈ ${result.root.toFixed(10)}`);
+                console.log(`f(x) ≈ ${result.functionValue.toFixed(10)}`);
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+        // Reset the example
+        document.getElementById('resetExample')?.addEventListener('click', function() {
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) tableBody.innerHTML = '';
+            currentIteration = 0;
+            iterations = [];
+
+            // Reset the visualization
+            drawFunction();
+        });
+
+        // Step through the iterations one by one
+        document.getElementById('stepExample')?.addEventListener('click', function() {
+            if (iterations.length === 0) {
+                try {
+                    const result = bisection(f, 1, 2);
+                    iterations = result.iterations;
+                } catch (error) {
+                    console.error(error);
+                    return;
+                }
+            }
+
+            if (currentIteration < iterations.length) {
+                // Display the next iteration
+                displayIterations(iterations.slice(0, currentIteration + 1));
+
+                // Update the visualization
+                drawFunction();
+                drawBisectionState(currentIteration);
+
+                currentIteration++;
+            }
+        });
+
+        // Animation controls
+        document.getElementById('startAnimation')?.addEventListener('click', function() {
+            if (!isAnimating) {
+                if (iterations.length === 0) {
+                    try {
+                        const result = bisection(f, 1, 2);
+                        iterations = result.iterations;
+                    } catch (error) {
+                        console.error(error);
+                        return;
+                    }
+                }
+
+                isAnimating = true;
+                currentIteration = 0;
+                animateBisection();
+            }
+        });
+
+        document.getElementById('pauseAnimation')?.addEventListener('click', function() {
+            isAnimating = false;
+            cancelAnimationFrame(animationId);
+        });
+
+        document.getElementById('resetAnimation')?.addEventListener('click', function() {
+            isAnimating = false;
+            cancelAnimationFrame(animationId);
+            currentIteration = 0;
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) tableBody.innerHTML = '';
+            drawFunction();
+        });
+
+        // Function to display iterations in the table
+        function displayIterations(iters) {
+            const tableBody = document.getElementById('tableBody');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+
+            iters.forEach(iter => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${iter.iteration}</td>
+                    <td>${iter.a.toFixed(6)}</td>
+                    <td>${iter.b.toFixed(6)}</td>
+                    <td>${iter.c.toFixed(6)}</td>
+                    <td>${iter.fa.toFixed(6)}</td>
+                    <td>${iter.fb.toFixed(6)}</td>
+                    <td>${iter.fc.toFixed(6)}</td>
+                    <td>${iter.error.toFixed(6)}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+
+            // Scroll to the bottom of the table
+            const iterationTable = document.getElementById('iterationTable');
+            if (iterationTable) iterationTable.scrollTop = iterationTable.scrollHeight;
+        }
+
+        // Canvas setup for visualization
+        const canvas = document.getElementById('bisectionCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Transform coordinates from mathematical to canvas space
+            function transformX(x) {
+                return (x - 0) * (width / 3) + width / 6;
+            }
+
+            function transformY(y) {
+                return height / 2 - y * (height / 10);
+            }
+
+            // Draw the function
+            function drawFunction() {
+                if (!ctx) return;
+
+                ctx.clearRect(0, 0, width, height);
+
+                // Draw axes
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.moveTo(transformX(0), 0);
+                ctx.lineTo(transformX(0), height);
+                ctx.strokeStyle = '#999';
+                ctx.stroke();
+
+                // Draw x-axis labels
+                for (let x = 0; x <= 3; x += 0.5) {
+                    ctx.fillText(x.toString(), transformX(x), height / 2 + 15);
+                    ctx.beginPath();
+                    ctx.moveTo(transformX(x), height / 2 - 5);
+                    ctx.lineTo(transformX(x), height / 2 + 5);
+                    ctx.stroke();
+                }
+
+                // Draw y-axis labels
+                for (let y = -5; y <= 5; y += 1) {
+                    if (y !== 0) {
+                        ctx.fillText(y.toString(), transformX(0) - 20, transformY(y));
+                        ctx.beginPath();
+                        ctx.moveTo(transformX(0) - 5, transformY(y));
+                        ctx.lineTo(transformX(0) + 5, transformY(y));
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw the function
+                ctx.beginPath();
+                ctx.moveTo(transformX(0), transformY(f(0)));
+
+                for (let x = 0; x <= 3; x += 0.01) {
+                    ctx.lineTo(transformX(x), transformY(f(x)));
+                }
+
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw the x-axis
+                ctx.beginPath();
+                ctx.moveTo(0, transformY(0));
+                ctx.lineTo(width, transformY(0));
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Label the function
+                ctx.fillStyle = '#3498db';
+                ctx.font = '16px Arial';
+                ctx.fillText('f(x) = x³ - x - 2', transformX(2.5), transformY(4));
+
+                // Reset styles
+                ctx.fillStyle = '#000';
+                ctx.lineWidth = 1;
+            }
+
+            // Draw the current state of the bisection method
+            function drawBisectionState(iterIndex) {
+                if (!ctx || iterIndex < 0 || iterIndex >= iterations.length) return;
+
+                const iter = iterations[iterIndex];
+
+                // Draw the current interval [a, b]
+                ctx.beginPath();
+                ctx.moveTo(transformX(iter.a), transformY(0));
+                ctx.lineTo(transformX(iter.b), transformY(0));
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Draw points a, b, and c
+                // Point a
+                ctx.beginPath();
+                ctx.arc(transformX(iter.a), transformY(0), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.fillText('a', transformX(iter.a) - 10, transformY(0) - 10);
+
+                // Point b
+                ctx.beginPath();
+                ctx.arc(transformX(iter.b), transformY(0), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.fillText('b', transformX(iter.b) + 10, transformY(0) - 10);
+
+                // Point c (midpoint)
+                ctx.beginPath();
+                ctx.arc(transformX(iter.c), transformY(0), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#2ecc71';
+                ctx.fill();
+                ctx.fillText('c', transformX(iter.c), transformY(0) - 10);
+
+                // Draw vertical lines from points to function
+                // Line from a to f(a)
+                ctx.beginPath();
+                ctx.moveTo(transformX(iter.a), transformY(0));
+                ctx.lineTo(transformX(iter.a), transformY(iter.fa));
+                ctx.strokeStyle = '#e74c3c';
+                ctx.setLineDash([5, 3]);
+                ctx.stroke();
+
+                // Line from b to f(b)
+                ctx.beginPath();
+                ctx.moveTo(transformX(iter.b), transformY(0));
+                ctx.lineTo(transformX(iter.b), transformY(iter.fb));
+                ctx.strokeStyle = '#e74c3c';
+                ctx.stroke();
+
+                // Line from c to f(c)
+                ctx.beginPath();
+                ctx.moveTo(transformX(iter.c), transformY(0));
+                ctx.lineTo(transformX(iter.c), transformY(iter.fc));
+                ctx.strokeStyle = '#2ecc71';
+                ctx.stroke();
+
+                // Reset line dash
+                ctx.setLineDash([]);
+
+                // Draw points f(a), f(b), and f(c)
+                // Point f(a)
+                ctx.beginPath();
+                ctx.arc(transformX(iter.a), transformY(iter.fa), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.fillText('f(a)', transformX(iter.a) - 25, transformY(iter.fa));
+
+                // Point f(b)
+                ctx.beginPath();
+                ctx.arc(transformX(iter.b), transformY(iter.fb), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.fillText('f(b)', transformX(iter.b) + 10, transformY(iter.fb));
+
+                // Point f(c)
+                ctx.beginPath();
+                ctx.arc(transformX(iter.c), transformY(iter.fc), 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#2ecc71';
+                ctx.fill();
+                ctx.fillText('f(c)', transformX(iter.c) + 10, transformY(iter.fc));
+
+                // Display iteration information
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Iteration: ${iter.iteration}`, 20, 30);
+                ctx.fillText(`a = ${iter.a.toFixed(6)}`, 20, 50);
+                ctx.fillText(`b = ${iter.b.toFixed(6)}`, 20, 70);
+                ctx.fillText(`c = ${iter.c.toFixed(6)}`, 20, 90);
+                ctx.fillText(`f(c) = ${iter.fc.toFixed(6)}`, 20, 110);
+                ctx.fillText(`Error = ${iter.error.toFixed(6)}`, 20, 130);
+            }
+
+            // Animate the bisection method
+            function animateBisection() {
+                if (isAnimating && currentIteration < iterations.length) {
+                    // Display the current iteration
+                    displayIterations(iterations.slice(0, currentIteration + 1));
+
+                    // Update the visualization
+                    drawFunction();
+                    drawBisectionState(currentIteration);
+
+                    currentIteration++;
+
+                    // Continue the animation
+                    setTimeout(() => {
+                        animationId = requestAnimationFrame(animateBisection);
+                    }, 1000); // 1 second delay between iterations
+                } else {
+                    isAnimating = false;
+                }
+            }
+
+            // Initialize the visualization
+            drawFunction();
+        }
+
+        // Bisection method implementation
+        function bisection(f, a, b, tol = 1e-7, maxIter = 100) {
+            // Check if the function changes sign over the interval
+            if (f(a) * f(b) >= 0) {
+                throw new Error("Function must change sign over the interval [a, b]");
+            }
+
+            let iterations = [];
+            let c, fa, fb, fc;
+
+            fa = f(a);
+            fb = f(b);
+
+            for (let i = 0; i < maxIter; i++) {
+                // Calculate midpoint
+                c = (a + b) / 2;
+                fc = f(c);
+
+                // Store iteration data
+                iterations.push({
+                    iteration: i + 1,
+                    a: a,
+                    b: b,
+                    c: c,
+                    fa: fa,
+                    fb: fb,
+                    fc: fc,
+                    error: (b - a) / 2
+                });
+
+                // Check if we've found the root or reached desired tolerance
+                if (Math.abs(fc) < tol || (b - a) / 2 < tol) {
+                    break;
+                }
+
+                // Update interval
+                if (fa * fc < 0) {
+                    b = c;
+                    fb = fc;
+                } else {
+                    a = c;
+                    fa = fc;
+                }
+            }
+
+            return {
+                root: c,
+                functionValue: fc,
+                iterations: iterations,
+                error: (b - a) / 2
+            };
+        }
+
+        // Initialize any elements that need it when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('bisectionCanvas');
+            if (canvas) {
+                drawFunction();
+            }
+        });
+    </script>
+
+    <section id="download" style="margin-top: 40px; padding: 20px; background-color: #e8f4f8; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2>Download Assignment Files</h2>
+        <div class="step">
+            <p>You can download all the files related to this assignment. The following files are available:</p>
+
+            <h3>Complete Package</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="bisection_assignment.zip" download style="display: inline-block; background-color: #1a2980; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <span style="margin-right: 10px;">📥</span> Download All Files (ZIP)
+                </a>
+            </div>
+
+            <h3>Individual Files</h3>
+            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="padding: 10px; text-align: left; background-color: #1a2980; color: white;">File Name</th>
+                        <th style="padding: 10px; text-align: left; background-color: #1a2980; color: white;">Description</th>
+                        <th style="padding: 10px; text-align: center; background-color: #1a2980; color: white;">Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Bisection_Algo.ipynb</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Jupyter Notebook with Python implementation and visualization</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="Bisection_Algo.ipynb" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">index.html</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Main HTML file with interactive visualizations</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="index.html" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">202424080129_PremKatuwal_Assg_3_numerical.docx</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Assignment 3 Report Document</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="202424080129_PremKatuwal_Assg_3_numerical.docx" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">202424080129_PremKatuwal_Bisect_numerical.docx</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Bisection Method Documentation</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="202424080129_PremKatuwal_Bisect_numerical.docx" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">202424080129_PremKatuwal_NANLProject1_numerical.docx</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Numerical Analysis Project 1</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="202424080129_PremKatuwal_NANLProject1_numerical.docx" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">202424080129_PremKatuwal_NANLProject2_numerical.docx</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Numerical Analysis Project 2</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                            <a href="202424080129_PremKatuwal_NANLProject2_numerical.docx" download style="display: inline-block; background-color: #2ecc71; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">📥 Download</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="margin-top: 20px; font-style: italic;">Note: The ZIP file contains all the above files plus any additional resources needed for the assignment.</p>
+        </div>
+    </section>
+
+    <footer style="margin-top: 40px; background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%); color: #fff; padding: 20px; text-align: center; border-radius: 8px;">
+        <p>© 2024 Prem Bahadur Katuwal | 202424080129 | Computer Science and Engineering | UESTC</p>
+        <p>Submitted to: Prof. Xi-Le Zhao (2021-2024 World's Top 2% Scientists)</p>
+    </footer>
+</body>
+</html>
